@@ -8,34 +8,34 @@ interface Props {
 }
 
 const { item } = Astro.props;
-const publishedLabel = formatPublishedDate(item.publishedAt);
+const publishedLabel = formatPublishedDate(item.data.publishedAt);
 ---
 
 <article class="content-card">
   <a
-    href={item.url}
+    href={item.data.url}
     target="_blank"
     rel="noopener noreferrer"
     class="content-card__link"
-    {...analyticsAttrs('content_click', { id: item.id, platform: item.platform })}
+    {...analyticsAttrs('content_click', { id: item.id, platform: item.data.platform })}
   >
     <div class="content-card__thumb">
       {
-        item.thumbnail ? (
-          <img src={item.thumbnail} alt={item.title} loading="lazy" />
+        item.data.thumbnail ? (
+          <img src={item.data.thumbnail} alt={item.data.title} loading="lazy" />
         ) : (
           <span class="content-card__thumb-fallback" aria-hidden="true">
-            {item.platform}
+            {item.data.platform}
           </span>
         )
       }
     </div>
 
     <div class="content-card__body">
-      <p class="content-card__category">{item.category}</p>
-      <h3 class="content-card__title">{item.title}</h3>
-      <p class="content-card__description">{item.description}</p>
-      {publishedLabel && <p class="content-card__date">{publishedLabel}</p>}
+      <p class="content-card__category">{item.data.category}</p>
+      <h3 class="content-card__title">{item.data.title}</h3>
+      <p class="content-card__description">{item.data.description}</p>
+      <p class="content-card__date">{publishedLabel}</p>
     </div>
   </a>
 </article>

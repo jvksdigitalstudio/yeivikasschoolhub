@@ -1,18 +1,21 @@
+import { getCollection } from 'astro:content';
 import type { ContentItem } from '../../types/content';
-import { contentItems } from '../../data/content';
 
 /**
- * Capa de consulta/selección sobre `data/content.ts`.
+ * Capa de consulta entre el Content Layer de Astro y la UI.
  *
- * Vive aquí y no en `data/` porque no es dato declarativo: es lógica
- * de negocio (qué se considera "publicado" o "destacado"). Mantenerla
- * separada permite, en el futuro, sustituir el origen del dato
- * (colección local → CMS → API) sin tocar los componentes que
- * consumen estas funciones.
+ * Los componentes/páginas nunca llaman a `getCollection()`
+ * directamente: solo conocen estas funciones. Esto permite, en el
+ * futuro, sustituir el origen del contenido (Markdown local → CMS/API
+ * vía un loader custom) sin tocar componentes ni páginas.
  */
 
-export const publishedContent = (): ContentItem[] =>
-  contentItems.filter((item) => item.status === 'published');
+export async function getPublishedContent(): Promise<ContentItem[]> {
+  const entries = await getCollection('contenido', ({ data }) => data.status === 'published');
+  return entries.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+}
 
-export const featuredContent = (): ContentItem[] =>
-  publishedContent().filter((item) => item.featured);
+export async function getFeaturedContent(): Promise<ContentItem[]> {
+  const published = await getPublishedContent();
+  return published.filter((item) => item.data.featured);
+}

@@ -1,5 +1,5 @@
 ---
-import type { Resource } from '../../types';
+import type { Resource, ResourceAvailability } from '../../types';
 import { analyticsAttrs } from '../../lib/analytics';
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
 
 const { resource } = Astro.props;
 
-const availabilityLabel: Record<Resource['availability'], string> = {
+const availabilityLabel: Record<ResourceAvailability, string> = {
   free: 'Gratis',
   premium: 'Premium',
   external: 'Enlace externo',
@@ -19,33 +19,33 @@ const availabilityLabel: Record<Resource['availability'], string> = {
 <article class="resource-card">
   <div class="resource-card__thumb">
     {
-      resource.image ? (
-        <img src={resource.image} alt={resource.title} loading="lazy" />
+      resource.data.image ? (
+        <img src={resource.data.image} alt={resource.data.title} loading="lazy" />
       ) : (
         <span class="resource-card__thumb-fallback" aria-hidden="true">
-          {resource.type}
+          {resource.data.type}
         </span>
       )
     }
   </div>
 
   <div class="resource-card__body">
-    <p class="resource-card__category">{resource.category}</p>
-    <h3 class="resource-card__title">{resource.title}</h3>
-    <p class="resource-card__description">{resource.description}</p>
+    <p class="resource-card__category">{resource.data.category}</p>
+    <h3 class="resource-card__title">{resource.data.title}</h3>
+    <p class="resource-card__description">{resource.data.description}</p>
 
     <div class="resource-card__footer">
-      <span class={`resource-card__badge resource-card__badge--${resource.availability}`}>
-        {availabilityLabel[resource.availability]}
+      <span class={`resource-card__badge resource-card__badge--${resource.data.availability}`}>
+        {availabilityLabel[resource.data.availability]}
       </span>
 
       {
-        resource.availability !== 'coming-soon' && (
+        resource.data.url && resource.data.availability !== 'coming-soon' && (
           <a
-            href={resource.url}
-            target={resource.external ? '_blank' : undefined}
-            rel={resource.external ? 'noopener noreferrer' : undefined}
-            {...analyticsAttrs('resource_click', { id: resource.id, type: resource.type })}
+            href={resource.data.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            {...analyticsAttrs('resource_click', { id: resource.id, type: resource.data.type })}
           >
             Ver recurso
           </a>

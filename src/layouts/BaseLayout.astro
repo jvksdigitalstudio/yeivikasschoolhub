@@ -17,6 +17,12 @@ const { title, description = site.description, path = Astro.url.pathname, noinde
 
 const pageTitle = title === site.brand ? title : `${title} · ${site.brand}`;
 const canonicalUrl = site.url ? new URL(path, site.url).toString() : undefined;
+// og:image/twitter:image deben ser URLs absolutas por spec. Solo se
+// construyen cuando existen A LA VEZ un asset real (`site.socialImage`)
+// y un dominio real (`site.url`); mientras falte cualquiera de los
+// dos, no se inventa ni una imagen ni una URL relativa a medias.
+const socialImageUrl =
+  site.url && site.socialImage ? new URL(site.socialImage, site.url).toString() : undefined;
 ---
 
 <!doctype html>
@@ -38,11 +44,15 @@ const canonicalUrl = site.url ? new URL(path, site.url).toString() : undefined;
     <meta property="og:type" content="website" />
     <meta property="og:locale" content={site.locale} />
     {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+    {socialImageUrl && <meta property="og:image" content={socialImageUrl} />}
 
     <!-- Twitter / X -->
-    <meta name="twitter:card" content="summary_large_image" />
+    <!-- "summary_large_image" solo si hay imagen real que mostrar; si no, "summary"
+         evita declarar un formato que promete una imagen inexistente. -->
+    <meta name="twitter:card" content={socialImageUrl ? 'summary_large_image' : 'summary'} />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
+    {socialImageUrl && <meta name="twitter:image" content={socialImageUrl} />}
 
     <link rel="icon" href="/favicon/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/site.webmanifest" />

@@ -7,9 +7,9 @@ import CommunitySection from '../components/community/CommunitySection.astro';
 import SocialLinks from '../components/social/SocialLinks.astro';
 import ContactCTA from '../components/contact/ContactCTA.astro';
 import { site } from '../data/site';
-import { featuredResources } from '../lib/resources/queries';
+import { getFeaturedResources } from '../lib/resources/queries';
 
-const resources = featuredResources();
+const resources = await getFeaturedResources();
 ---
 
 <BaseLayout title={site.brand} description={site.description} path="/">

@@ -1,8 +1,8 @@
 ---
 import ContentCard from './ContentCard.astro';
-import { featuredContent } from '../../lib/content/queries';
+import { getFeaturedContent } from '../../lib/content/queries';
 
-const items = featuredContent();
+const items = await getFeaturedContent();
 ---
 
 <section class="section" aria-labelledby="contenido-destacado-heading">

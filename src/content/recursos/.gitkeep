@@ -1,0 +1,4 @@
+Esta colección usa el Content Layer de Astro (src/content.config.ts).
+Vacía intencionalmente: no se inventan recursos. Añadir aquí archivos
+.md con frontmatter según el schema de la colección "recursos"
+cuando existan piezas reales.

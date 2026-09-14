@@ -12,7 +12,7 @@ export type { SiteConfig } from './site';
 export type { NavItem } from './navigation';
 export type { SocialPlatform, SocialLink } from './social';
 export type { ContentStatus, ContentPlatform, ContentItem } from './content';
-export type { ResourceType, ResourceAvailability, Resource } from './resource';
+export type { ResourceType, ResourceAvailability, ResourceStatus, Resource } from './resource';
 export type {
   CommunityType,
   CommunityAudienceAction,

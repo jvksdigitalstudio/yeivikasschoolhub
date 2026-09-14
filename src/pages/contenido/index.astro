@@ -2,9 +2,9 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHeader from '../../components/layout/PageHeader.astro';
 import ContentCard from '../../components/content/ContentCard.astro';
-import { publishedContent } from '../../lib/content/queries';
+import { getPublishedContent } from '../../lib/content/queries';
 
-const items = publishedContent();
+const items = await getPublishedContent();
 
 const pageDescription =
   'Tutoriales y contenido de producción musical: FL Studio Mobile, teoría musical, grabación y técnicas, organizado por categoría.';

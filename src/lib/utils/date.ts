@@ -1,13 +1,11 @@
 /**
- * Formatea una fecha ISO a un formato legible en español.
- * Devuelve `null` si no hay fecha (para poder ocultar el dato en UI).
+ * Formatea una fecha a un formato legible en español.
+ *
+ * `publishedAt` es un campo obligatorio del schema de `contenido`
+ * (ver `src/content.config.ts`), así que aquí siempre llega una
+ * `Date` válida: no hace falta manejar el caso "sin fecha".
  */
-export function formatPublishedDate(isoDate?: string): string | null {
-  if (!isoDate) return null;
-
-  const date = new Date(isoDate);
-  if (Number.isNaN(date.getTime())) return null;
-
+export function formatPublishedDate(date: Date): string {
   return new Intl.DateTimeFormat('es-ES', {
     day: 'numeric',
     month: 'long',

@@ -2,7 +2,9 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHeader from '../../components/layout/PageHeader.astro';
 import ResourceGrid from '../../components/resources/ResourceGrid.astro';
-import { resources } from '../../data/resources';
+import { getPublishedResources } from '../../lib/resources/queries';
+
+const resources = await getPublishedResources();
 
 const pageDescription =
   'DAW, instrumentos, presets, samples y herramientas para producción musical.';
