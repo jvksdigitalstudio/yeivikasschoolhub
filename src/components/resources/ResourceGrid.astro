@@ -1,0 +1,46 @@
+---
+import ResourceCard from './ResourceCard.astro';
+import type { Resource } from '../../types';
+
+interface Props {
+  resources: Resource[];
+  emptyMessage?: string;
+}
+
+const {
+  resources,
+  emptyMessage = 'Todavía no hay recursos publicados. Estamos preparando el primer lote.',
+} = Astro.props;
+---
+
+{
+  resources.length > 0 ? (
+    <div class="resource-grid">
+      {resources.map((resource) => (
+        <ResourceCard resource={resource} />
+      ))}
+    </div>
+  ) : (
+    <p class="empty-state">{emptyMessage}</p>
+  )
+}
+
+<style>
+  .resource-grid {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .resource-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .resource-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

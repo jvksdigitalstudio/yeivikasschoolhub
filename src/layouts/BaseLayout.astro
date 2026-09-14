@@ -1,0 +1,70 @@
+---
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import { site } from '../data/site';
+import '../styles/globals.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Ruta relativa, p. ej. "/contenido". Se usa para construir el canonical. */
+  path?: string;
+  /** Desactiva la indexación (por ejemplo, 404). */
+  noindex?: boolean;
+}
+
+const { title, description = site.description, path = Astro.url.pathname, noindex = false } = Astro.props;
+
+const pageTitle = title === site.brand ? title : `${title} · ${site.brand}`;
+const canonicalUrl = site.url ? new URL(path, site.url).toString() : undefined;
+---
+
+<!doctype html>
+<html lang={site.language}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content={site.brand} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={site.locale} />
+    {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+
+    <link rel="icon" href="/favicon/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a href="#contenido-principal" class="skip-link">Saltar al contenido principal</a>
+
+    <Header />
+
+    <main id="contenido-principal">
+      <slot />
+    </main>
+
+    <Footer />
+
+    <script src="../lib/analytics/bindings.client.ts"></script>
+  </body>
+</html>

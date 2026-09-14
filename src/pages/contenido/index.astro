@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/layout/PageHeader.astro';
+import ContentCard from '../../components/content/ContentCard.astro';
+import { publishedContent } from '../../lib/content/queries';
+
+const items = publishedContent();
+
+const pageDescription =
+  'Tutoriales y contenido de producción musical: FL Studio Mobile, teoría musical, grabación y técnicas, organizado por categoría.';
+---
+
+<BaseLayout title="Contenido" description={pageDescription} path="/contenido">
+  <PageHeader eyebrow="Contenido" title="Contenido" description={pageDescription} />
+
+  <section class="section">
+    <div class="container">
+      {
+        items.length > 0 ? (
+          <div class="content-page__grid">
+            {items.map((item) => (
+              <ContentCard item={item} />
+            ))}
+          </div>
+        ) : (
+          <p class="empty-state">
+            Todavía no hay contenido publicado aquí. Muy pronto encontrarás tutoriales y recursos
+            organizados por categoría.
+          </p>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .content-page__grid {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .content-page__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .content-page__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

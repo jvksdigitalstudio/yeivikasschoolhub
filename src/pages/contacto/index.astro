@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/layout/PageHeader.astro';
+import ContactCTA from '../../components/contact/ContactCTA.astro';
+
+const pageDescription = 'Cómo escribir a YeiViKas school.';
+---
+
+<BaseLayout title="Contacto" description={pageDescription} path="/contacto">
+  <PageHeader eyebrow="Contacto" title="Contacto" description={pageDescription} />
+  <ContactCTA headingLevel="h2" />
+</BaseLayout>

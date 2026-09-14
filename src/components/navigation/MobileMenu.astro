@@ -1,0 +1,164 @@
+---
+import type { NavItem } from '../../types';
+
+interface Props {
+  items: NavItem[];
+  currentPath: string;
+}
+
+const { items, currentPath } = Astro.props;
+
+const isActive = (href: string) =>
+  href === '/' ? currentPath === '/' : currentPath.startsWith(href);
+---
+
+<div class="mobile-menu">
+  <button
+    type="button"
+    id="mobile-menu-toggle"
+    class="mobile-menu__toggle"
+    aria-expanded="false"
+    aria-controls="mobile-menu-panel"
+  >
+    <span class="visually-hidden">Abrir menú de navegación</span>
+    <span class="mobile-menu__icon" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
+  </button>
+
+  <div id="mobile-menu-panel" class="mobile-menu__panel" hidden>
+    <nav aria-label="Navegación móvil">
+      <ul>
+        {
+          items.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<style>
+  .mobile-menu {
+    display: block;
+  }
+
+  @media (min-width: 900px) {
+    .mobile-menu {
+      display: none;
+    }
+  }
+
+  .mobile-menu__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+  }
+
+  .mobile-menu__icon {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mobile-menu__icon span {
+    width: 18px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+  }
+
+  .mobile-menu__panel {
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-4) var(--space-5) var(--space-6);
+  }
+
+  .mobile-menu__panel ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .mobile-menu__panel a {
+    display: block;
+    padding: var(--space-3) var(--space-2);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: var(--fs-md);
+    color: var(--color-text-secondary);
+    border-radius: var(--radius-sm);
+  }
+
+  .mobile-menu__panel a:hover,
+  .mobile-menu__panel a[aria-current='page'] {
+    color: var(--color-text);
+    background: var(--color-surface-elevated);
+  }
+</style>
+
+<script>
+  const toggle = document.getElementById('mobile-menu-toggle');
+  const panel = document.getElementById('mobile-menu-panel');
+
+  if (toggle && panel) {
+    const openMenu = () => {
+      panel.hidden = false;
+      toggle.setAttribute('aria-expanded', 'true');
+      const firstLink = panel.querySelector('a');
+      firstLink?.focus();
+    };
+
+    const closeMenu = ({ returnFocus = false }: { returnFocus?: boolean } = {}) => {
+      panel.hidden = true;
+      toggle.setAttribute('aria-expanded', 'false');
+      if (returnFocus) toggle.focus();
+    };
+
+    toggle.addEventListener('click', () => {
+      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      if (isOpen) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        closeMenu({ returnFocus: true });
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      const target = event.target as Node;
+      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      if (isOpen && !panel.contains(target) && !toggle.contains(target)) {
+        closeMenu();
+      }
+    });
+
+    // Cierra el menú si se navega a una ruta interna (sin necesidad de framework).
+    panel.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement)?.tagName === 'A') {
+        closeMenu();
+      }
+    });
+  }
+</script>

@@ -1,0 +1,118 @@
+---
+import SocialLinks from '../social/SocialLinks.astro';
+import { mainNavigation } from '../../data/navigation';
+import { site } from '../../data/site';
+import { contact } from '../../data/contact';
+import { analyticsAttrs } from '../../lib/analytics';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__grid">
+    <div class="site-footer__brand">
+      <p class="site-footer__brand-name">YeiViKas<span>school</span></p>
+      <p class="site-footer__tagline">Aprende. Crea. Produce.</p>
+    </div>
+
+    <nav class="site-footer__nav" aria-label="Navegación secundaria">
+      <p class="site-footer__heading">Navegación</p>
+      <ul>
+        {
+          mainNavigation.map((item) => (
+            <li>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="site-footer__social">
+      <p class="site-footer__heading">Redes</p>
+      <SocialLinks variant="compact" />
+    </div>
+
+    <div class="site-footer__contact">
+      <p class="site-footer__heading">Contacto</p>
+      <a href={`mailto:${contact.email}`} {...analyticsAttrs('contact_click', { source: 'footer' })}>
+        {contact.email}
+      </a>
+    </div>
+  </div>
+
+  <div class="container site-footer__legal">
+    <p>&copy; {year} {site.brand}. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface);
+    margin-top: var(--space-9);
+  }
+
+  .site-footer__grid {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: var(--space-7);
+  }
+
+  @media (min-width: 700px) {
+    .site-footer__grid {
+      grid-template-columns: 1.2fr repeat(3, 1fr);
+    }
+  }
+
+  .site-footer__brand-name {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: var(--fs-md);
+    color: var(--color-text);
+  }
+
+  .site-footer__brand-name span {
+    color: var(--color-brand-gold);
+  }
+
+  .site-footer__tagline {
+    margin-top: var(--space-1);
+    font-size: var(--fs-sm);
+  }
+
+  .site-footer__heading {
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-3);
+  }
+
+  .site-footer__nav ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .site-footer__nav a,
+  .site-footer__contact a {
+    font-size: var(--fs-sm);
+    color: var(--color-text-secondary);
+    transition: color var(--transition-fast);
+  }
+
+  .site-footer__nav a:hover,
+  .site-footer__contact a:hover {
+    color: var(--color-text);
+  }
+
+  .site-footer__legal {
+    border-top: 1px solid var(--color-border);
+    padding-block: var(--space-4);
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+  }
+</style>

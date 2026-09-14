@@ -1,0 +1,38 @@
+---
+import { contact } from '../../data/contact';
+import { analyticsAttrs } from '../../lib/analytics';
+
+interface Props {
+  headingLevel?: 'h2' | 'h1';
+}
+
+const { headingLevel = 'h2' } = Astro.props;
+const Heading = headingLevel;
+---
+
+<section class="section contact-cta" aria-labelledby="contacto-heading">
+  <div class="container contact-cta__inner">
+    <div class="section-header">
+      <p class="section-eyebrow">Contacto</p>
+      <Heading id="contacto-heading">¿Quieres escribirnos?</Heading>
+      {contact.responseNote && <p>{contact.responseNote}</p>}
+    </div>
+
+    <a
+      href={`mailto:${contact.email}`}
+      class="btn btn-primary"
+      {...analyticsAttrs('contact_click', { source: 'contact-cta' })}
+    >
+      {contact.email}
+    </a>
+  </div>
+</section>
+
+<style>
+  .contact-cta__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    align-items: flex-start;
+  }
+</style>

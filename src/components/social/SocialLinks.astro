@@ -1,0 +1,70 @@
+---
+import type { SocialLink } from '../../types';
+import { activeSocialLinks } from '../../lib/social/queries';
+import { socialClickEvent } from '../../lib/social/analytics';
+import { analyticsAttrs } from '../../lib/analytics';
+
+interface Props {
+  /** Título accesible de la lista de enlaces. */
+  label?: string;
+  variant?: 'default' | 'compact';
+}
+
+const { label = 'Redes oficiales', variant = 'default' } = Astro.props;
+
+const links: SocialLink[] = activeSocialLinks();
+---
+
+{
+  links.length > 0 ? (
+    <nav aria-label={label} class={`social-links social-links--${variant}`}>
+      <ul>
+        {links.map((link) => (
+          <li>
+            <a
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              {...analyticsAttrs(socialClickEvent[link.platform], { platform: link.platform })}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  ) : (
+    <p class="empty-state">Los canales oficiales se activarán próximamente.</p>
+  )
+}
+
+<style>
+  .social-links ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .social-links a {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-family: var(--font-heading);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    transition: border-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .social-links a:hover {
+    color: var(--color-text);
+    border-color: var(--color-tech-purple);
+  }
+
+  .social-links--compact a {
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--fs-xs);
+  }
+</style>

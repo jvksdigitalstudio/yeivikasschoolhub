@@ -1,0 +1,58 @@
+---
+import ContentCard from './ContentCard.astro';
+import { featuredContent } from '../../lib/content/queries';
+
+const items = featuredContent();
+---
+
+<section class="section" aria-labelledby="contenido-destacado-heading">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-eyebrow">Contenido</p>
+      <h2 id="contenido-destacado-heading">Contenido destacado</h2>
+    </div>
+
+    {
+      items.length > 0 ? (
+        <div class="featured-content__grid">
+          {items.map((item) => (
+            <ContentCard item={item} />
+          ))}
+        </div>
+      ) : (
+        <p class="empty-state">
+          Todavía no hay contenido destacado publicado. Muy pronto encontrarás aquí tutoriales y
+          recursos de producción musical.
+        </p>
+      )
+    }
+
+    <div class="featured-content__cta">
+      <a href="/contenido" class="btn btn-secondary">Ver todo el contenido</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .featured-content__grid {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .featured-content__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .featured-content__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .featured-content__cta {
+    margin-top: var(--space-6);
+  }
+</style>
