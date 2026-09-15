@@ -222,6 +222,17 @@ runtime):
   por `sortOrder` ascendente (menor = aparece antes); `getFeaturedResources()`
   hereda ese mismo orden.
 
+`thumbnail` (`contenido`) e `image` (`recursos`) son opcionales — los
+componentes ya funcionan correctamente sin ellos — pero, cuando existen,
+el schema exige que sean o bien una URL externa real (`http`/`https`, p. ej.
+el thumbnail que ya sirve la propia plataforma del contenido), o bien una
+ruta local absoluta desde la raíz pública siguiendo la convención
+`/images/content/...` / `/images/resources/...` (carpetas
+`public/images/content/` y `public/images/resources/`). Rutas relativas
+(`../images/...`, `./images/...`, `src/...`) fallan la validación: no tienen
+una base fiable entre `astro dev` y `astro build`, así que es mejor
+rechazarlas en el schema que dejarlas romperse en producción.
+
 Los valores internos del schema (`platform`, `type`, `availability`...) no se
 muestran nunca tal cual en la interfaz: `ContentCard`/`ResourceCard` usan
 mapas tipados de etiquetas (`platformLabel`, `typeLabel`, `availabilityLabel`)
