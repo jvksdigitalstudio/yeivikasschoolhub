@@ -17,9 +17,17 @@ funcionalidades futuras (productos, cursos, pagos, CMS, autenticación, etc.).
 
 ## Requisitos de entorno
 
-- **Node `>=22.12.0`** — requisito real de Astro 7 (`package.json` → `engines.node`
-  y `.github/workflows/ci.yml` usan Node 22). Con Node 20 el build falla antes de
-  arrancar Astro con el error `Node.js vX is not supported by Astro!`.
+- **Node `>=22.19.0`** (`package.json` → `engines.node`). Astro 7 por sí solo
+  solo exige `>=22.12.0`, pero `undici@8.10.2` — una dependencia real y
+  resuelta en `package-lock.json` (transitiva de `unifont`, usado por Astro
+  para fuentes) — declara `>=22.19.0`, que es el requisito más alto de todo
+  el árbol instalado. `engines.node` refleja ese máximo real, no solo el de
+  Astro, para que la declaración sea honesta con lo que `npm ci` realmente
+  instala. `.github/workflows/ci.yml` usa `node-version: '22'`, que
+  `actions/setup-node` resuelve al último parche de Node 22 disponible —ya
+  por delante de 22.19.0—, así que el workflow no necesitó cambios. Con Node
+  20 el build falla antes de arrancar Astro con el error `Node.js vX is not
+  supported by Astro!`.
 - npm (se usa `npm ci`/`npm install`, no otro gestor de paquetes).
 
 ## Instalación
@@ -104,12 +112,24 @@ Regla de separación (dos capas distintas, no confundir):
   espera que crezcan, tengan estado (`draft`/`published`/`archived`) y
   eventualmente vengan de un CMS/API en vez de Markdown local.
 
-En ambos casos, ningún componente ni página accede directamente al
-almacenamiento (ni a `data/*.ts` con lógica, ni a `getCollection()`): todo
-pasa por `lib/*/queries.ts`. Esto permite que en el futuro el origen del
-contenido cambie (Markdown local → CMS/API vía un loader custom del Content
-Layer) sin tocar ningún componente, porque los componentes solo conocen los
-contratos de `types/`.
+El contenido editorial nunca se lee directamente desde un componente/página:
+`getPublishedContent()`/`getFeaturedContent()`/`getPublishedResources()`/
+`getFeaturedResources()` son el único punto de acceso a `getCollection()`.
+Esto permite que en el futuro el origen del contenido cambie (Markdown local
+→ CMS/API vía un loader custom del Content Layer) sin tocar ningún
+componente, porque los componentes solo conocen los contratos de `types/`.
+
+`data/` es distinto: no hay una regla absoluta de "siempre pasar por una
+query". `site`, `navigation`, `community` y `contact` se leen **directamente**
+desde los componentes/páginas que los necesitan (`Header`, `Footer`,
+`ContactCTA`, `CommunitySection`, `BaseLayout`...) porque no existe ninguna
+lógica de selección, filtrado o transformación que justifique una capa
+intermedia — son datos ya listos para usar tal cual. `social.ts` es la
+excepción: sí tiene una query (`lib/social/queries.ts` → `activeSocialLinks()`)
+porque ahí sí existe una responsabilidad real (filtrar por `active`). La
+regla, aplicada con criterio y no de forma literal: una query existe cuando
+hay algo real que seleccionar/transformar, no por consistencia superficial —
+crear una query que solo reenvíe el array tal cual no aportaría nada.
 
 Nota: no existe `lib/contact/`. `ContactInfo.email` es obligatorio y ya está
 confirmado, así que una función `hasContactEmail()` sería siempre `true` — una
@@ -187,6 +207,27 @@ Reglas de negocio, aplicadas en `lib/content/queries.ts` y
   `getPublishedResources()`.
 - `getFeaturedContent()`/`getFeaturedResources()` devuelven, además,
   solo `featured: true`.
+
+Reglas de validación del schema de `recursos` (fallan en build/dev, no en
+runtime):
+
+- `url` es **obligatoria y debe ser una URL válida** salvo cuando
+  `availability` es `"coming-soon"` (ahí puede faltar). Un recurso
+  `free`/`premium`/`external` sin `url` no pasa la validación del Content
+  Layer.
+- `sortOrder` (entero, no negativo) es **obligatorio** en todo recurso: la
+  colección está vacía hoy, así que exigirlo desde ahora no rompe nada, y
+  evita tener que definir una regla de desempate en tiempo de ejecución para
+  recursos sin valor. `getPublishedResources()` ordena de forma determinista
+  por `sortOrder` ascendente (menor = aparece antes); `getFeaturedResources()`
+  hereda ese mismo orden.
+
+Los valores internos del schema (`platform`, `type`, `availability`...) no se
+muestran nunca tal cual en la interfaz: `ContentCard`/`ResourceCard` usan
+mapas tipados de etiquetas (`platformLabel`, `typeLabel`, `availabilityLabel`)
+para traducir a español lo que se ve en pantalla, sin tocar los valores del
+schema. Los mismos valores internos sí se siguen usando, sin traducir, como
+payload de analytics (son identificadores estables, no texto de UI).
 
 Ambas colecciones están vacías hoy (0 entradas): el build, las páginas y los
 componentes lo soportan sin errores, mostrando el estado vacío correspondiente
