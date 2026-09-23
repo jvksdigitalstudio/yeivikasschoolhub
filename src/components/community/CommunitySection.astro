@@ -1,0 +1,42 @@
+---
+import CommunityCard from './CommunityCard.astro';
+import { communityDestinations } from '../../data/community';
+
+interface Props {
+  headingLevel?: 'h2' | 'h1';
+}
+
+const { headingLevel = 'h2' } = Astro.props;
+const Heading = headingLevel;
+---
+
+<section class="section" aria-labelledby="comunidad-heading">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-eyebrow">Comunidad</p>
+      <Heading id="comunidad-heading">Dos espacios, dos propósitos</Heading>
+      <p>
+        El canal de WhatsApp es para anuncios oficiales. El grupo es para conversar con otros
+        productores. No son lo mismo.
+      </p>
+    </div>
+
+    <div class="community-section__grid">
+      {communityDestinations.map((destination) => <CommunityCard destination={destination} />)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .community-section__grid {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 700px) {
+    .community-section__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

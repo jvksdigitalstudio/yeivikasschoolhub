@@ -1,0 +1,4 @@
+Convención de assets para el contenido editorial (ver src/content.config.ts):
+las imágenes locales de "contenido" van en esta carpeta y se referencian
+en el frontmatter como /images/content/<archivo>. Vacía intencionalmente:
+no hay imágenes reales todavía, no se crean placeholders falsos.

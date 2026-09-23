@@ -1,0 +1,69 @@
+---
+---
+
+<section class="hero">
+  <div class="container hero__inner">
+    <p class="hero__eyebrow">YeiViKas school</p>
+    <h1 class="hero__title">Aprende. Crea. Produce.</h1>
+    <p class="hero__subtitle">
+      Educación, recursos y comunidad<br class="hero__break" /> para productores musicales.
+    </p>
+
+    <div class="hero__actions">
+      <a href="/contenido" class="btn btn-primary">Explorar contenido</a>
+      <a href="/recursos" class="btn btn-secondary">Ver recursos</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    padding-block: var(--space-9) var(--space-8);
+    background:
+      radial-gradient(80% 60% at 15% 0%, color-mix(in srgb, var(--color-tech-purple) 14%, transparent), transparent),
+      radial-gradient(60% 50% at 100% 10%, color-mix(in srgb, var(--color-brand-gold) 10%, transparent), transparent);
+    overflow: hidden;
+  }
+
+  .hero__inner {
+    max-width: 720px;
+  }
+
+  .hero__eyebrow {
+    font-family: var(--font-heading);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-brand-gold);
+    margin-bottom: var(--space-3);
+  }
+
+  .hero__title {
+    font-size: var(--fs-3xl);
+  }
+
+  .hero__subtitle {
+    margin-top: var(--space-4);
+    font-size: var(--fs-md);
+    max-width: 46ch;
+  }
+
+  .hero__break {
+    display: none;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+  }
+
+  @media (min-width: 640px) {
+    .hero__break {
+      display: block;
+    }
+  }
+</style>

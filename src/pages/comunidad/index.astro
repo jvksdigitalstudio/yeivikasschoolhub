@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/layout/PageHeader.astro';
+import CommunityCard from '../../components/community/CommunityCard.astro';
+import { communityDestinations } from '../../data/community';
+
+const pageDescription =
+  'Dos espacios distintos: el canal de WhatsApp para anuncios oficiales y el grupo para conversar con otros productores.';
+---
+
+<BaseLayout title="Comunidad" description={pageDescription} path="/comunidad">
+  <PageHeader eyebrow="Comunidad" title="Comunidad" description={pageDescription} />
+
+  <section class="section" aria-labelledby="lista-comunidad-heading">
+    <div class="container">
+      <h2 id="lista-comunidad-heading" class="visually-hidden">Espacios de comunidad</h2>
+      <div class="community-page__grid">
+        {communityDestinations.map((destination) => <CommunityCard destination={destination} />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .community-page__grid {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 700px) {
+    .community-page__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

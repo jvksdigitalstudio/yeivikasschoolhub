@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/hero/Hero.astro';
+import FeaturedContent from '../components/content/FeaturedContent.astro';
+import ResourceGrid from '../components/resources/ResourceGrid.astro';
+import CommunitySection from '../components/community/CommunitySection.astro';
+import SocialLinks from '../components/social/SocialLinks.astro';
+import ContactCTA from '../components/contact/ContactCTA.astro';
+import { site } from '../data/site';
+import { getFeaturedResources } from '../lib/resources/queries';
+
+const resources = await getFeaturedResources();
+---
+
+<BaseLayout title={site.brand} description={site.description} path="/">
+  <Hero />
+
+  <FeaturedContent />
+
+  <section class="section" aria-labelledby="recursos-heading">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Recursos</p>
+        <h2 id="recursos-heading">Recursos para producir</h2>
+      </div>
+      <ResourceGrid resources={resources} />
+      <div class="home-resources__cta">
+        <a href="/recursos" class="btn btn-secondary">Ver todos los recursos</a>
+      </div>
+    </div>
+  </section>
+
+  <CommunitySection />
+
+  <section class="section" aria-labelledby="redes-heading">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Redes</p>
+        <h2 id="redes-heading">Encuéntranos en redes</h2>
+      </div>
+      <SocialLinks />
+    </div>
+  </section>
+
+  <ContactCTA />
+</BaseLayout>
+
+<style>
+  .home-resources__cta {
+    margin-top: var(--space-6);
+  }
+</style>

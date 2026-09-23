@@ -1,0 +1,4 @@
+Convención de assets para los recursos (ver src/content.config.ts): las
+imágenes locales de "recursos" van en esta carpeta y se referencian en el
+frontmatter como /images/resources/<archivo>. Vacía intencionalmente: no
+hay imágenes reales todavía, no se crean placeholders falsos.

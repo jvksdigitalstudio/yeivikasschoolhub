@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Cuando exista el dominio de producción, añadir aquí la línea:
+# Sitemap: https://<dominio-real>/sitemap-index.xml

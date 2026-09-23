@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/layout/PageHeader.astro';
+import ResourceGrid from '../../components/resources/ResourceGrid.astro';
+import { getPublishedResources } from '../../lib/resources/queries';
+
+const resources = await getPublishedResources();
+
+const pageDescription =
+  'DAW, instrumentos, presets, samples y herramientas para producción musical.';
+---
+
+<BaseLayout title="Recursos" description={pageDescription} path="/recursos">
+  <PageHeader eyebrow="Recursos" title="Recursos" description={pageDescription} />
+
+  <section class="section" aria-labelledby="lista-recursos-heading">
+    <div class="container">
+      <h2 id="lista-recursos-heading" class="visually-hidden">Lista de recursos</h2>
+      <ResourceGrid resources={resources} />
+    </div>
+  </section>
+</BaseLayout>

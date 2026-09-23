@@ -1,0 +1,25 @@
+{
+  "name": "yeivikas-school-hub",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "YeiViKas school Digital Hub — propiedad web oficial de YeiViKas school.",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "check": "astro check",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^7.3.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  }
+}
