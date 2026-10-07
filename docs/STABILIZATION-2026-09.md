@@ -390,3 +390,105 @@ Se repitió también el chequeo aislado `tsc --strict` sobre todo
 `content.config.ts` + `types/*` + `lib/**`: **0 errores** (sin cambios
 desde Pass 3, ya que esta pasada no modificó ningún `.ts`).
 
+---
+
+# Pass 5 — caza de basura, código flotante y código muerto
+
+Barrido específico (no un checklist de arquitectura, sino una
+búsqueda dirigida de residuos) sobre **todo** `src/`: imports sin usar,
+exports sin consumidor, variables CSS sin usar, clases CSS huérfanas,
+archivos huérfanos, `console.log`/`debugger` olvidados,
+`TODO`/`FIXME`/`HACK`, bloques de código comentado, selectores CSS
+duplicados, y lógica duplicada entre componentes/páginas/queries.
+Metodología: scripts de `grep`/`awk` por categoría sobre el código
+real, con verificación manual de cada resultado antes de concluir nada
+(varios resultados automáticos resultaron ser falsos positivos, ver
+abajo).
+
+## Resultado: cero bugs nuevos, cero basura real
+
+No se encontró ningún `console.log`/`debugger` olvidado, ningún
+`TODO`/`FIXME`/`HACK` real (los únicos matches de "todo" eran la
+palabra española "Todos los derechos reservados", falso positivo de
+texto), ningún import declarado y no usado, ningún archivo `.astro`
+huérfano (sin ninguna referencia en el resto del proyecto), y ninguna
+lógica de `sort`/`filter`/`slice` duplicada fuera de `lib/*/queries.ts`
+(las páginas y componentes solo hacen `.map()` sobre lo que la capa de
+queries ya les entrega filtrado y ordenado).
+
+## Falsos positivos descartados tras verificación manual
+
+Un script no puede entender interpolación de JavaScript, así que
+varios resultados automáticos iniciales resultaron ser correctos al
+revisar el código fuente directamente:
+
+- `.social-links--compact` y `.resource-card__badge--{free,premium}`
+  parecían clases CSS "sin usar" porque se construyen con *template
+  literals* (`` `social-links social-links--${variant}` ``,
+  `` `resource-card__badge resource-card__badge--${resource.data.availability}` ``),
+  no como texto literal — confirmado revisando el `.astro` real, no
+  son basura.
+- Varios selectores CSS que el script reportó como "duplicados"
+  (`.mobile-menu`, `.resource-grid`, `.site-header__nav`, etc.) son en
+  realidad una regla base + su *override* dentro de un `@media`, el
+  patrón responsive estándar ya usado en todo el proyecto — confirmado
+  línea por línea, no son copy-paste accidental.
+
+## Hallazgos reales: símbolos técnicamente sin consumidor (evaluados, no eliminados)
+
+Se encontraron dos categorías de símbolos exportados sin ningún
+consumidor actual en el código:
+
+**Tipos TypeScript:** `ResourceStatus`, `ContentStatus`,
+`ResourceSource` están exportados desde `types/resource.ts` /
+`types/content.ts` / el barrel `types/index.ts`, pero ningún
+componente, página o query los importa hoy como anotación de tipo
+explícita (el campo `status`/`source` sí se usa en tiempo de
+ejecución — en `queries.ts` y en `ResourceCard.astro` respectivamente
+— solo el alias de tipo en sí no tiene ningún `import type` que lo
+consuma todavía).
+
+**Variables CSS:** `--color-tech-purple-deep`, `--shadow-elevated`,
+`--transition-base` están declaradas en `tokens.css` pero ningún
+componente las consume con `var(...)` todavía (`--color-danger` ya
+estaba en esta misma situación desde la Fase 1 y se mantuvo por el
+mismo motivo).
+
+**Decisión: NO se eliminan.** Un ingeniero senior no borra superficie
+pública solo porque hoy no tiene consumidor, cuando eliminarla tiene
+coste real y mantenerla no lo tiene:
+
+- Los tipos TS se borran por completo en compilación (`tsc` los
+  elimina al generar JS): mantenerlos cuesta **0 bytes** en el build
+  final. `types/resource.ts` declara explícitamente en su propio
+  comentario que su propósito es proyectar *todos* los campos del
+  schema Zod como contrato público, no solo el subconjunto que algún
+  componente ya consume — son completamente consistentes con ese
+  objetivo declarado, igual que `ResourceType`/`ContentPlatform`
+  (estos sí con consumidor hoy) siguen el mismo patrón.
+- Las variables CSS sí cuestan bytes reales (no se borran en build),
+  pero el coste es de pocas decenas de bytes en total, y los
+  comentarios de `tokens.css` (que citan "sección 26", "sección 27"...)
+  indican que proceden de una especificación de sistema de diseño más
+  amplia de la que este V1 solo consume un subconjunto — exactamente
+  el mismo criterio ya aplicado a `--color-danger` en la Fase 1.
+- Borrarlos ahora y tener que reintroducirlos en la próxima fase (muy
+  probable: un estado `status` es justo lo que necesitaría, por
+  ejemplo, una vista de borradores, y un recurso `source` ya se
+  consume activamente en `ResourceCard.astro`) sería desperdiciar
+  trabajo sin ningún beneficio real — exactamente el tipo de cambio
+  cosmético sin justificación que el propio criterio de esta fase
+  prohíbe.
+
+Si en una fase futura se confirma que alguno de estos símbolos nunca
+llegará a usarse, es una decisión editorial/de producto, no un bug
+técnico — se puede revisar entonces con esa información, que hoy no
+existe.
+
+## Validación de esta pasada
+
+- **Cero cambios de código**: no se modificó ningún archivo fuente,
+  solo esta entrada de documentación.
+- Re-confirmado `npm ci`/`npm audit`: **ENVIRONMENT FAILURE** (mismo
+  bloqueo de red de siempre en este entorno).
+
